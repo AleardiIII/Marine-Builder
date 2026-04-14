@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Autotex Marine Wiper System Builder</title>
+<style>
+:root {
+  /* Autotex Brand Palette */
+  --ink:       #1A1A1A;
+  --ink-2:     #1A1A1A;
+  --ink-3:     #3a3a3a;
+  --muted:     #6B6B6B;
+  --ghost:     #8a8a8a;
+  --rule:      rgba(0,0,0,0.08);
+  --rule-2:    rgba(0,0,0,0.14);
+  --bg:        #F2F2F2;
+  --surface:   #ffffff;
+  --surface-2: #F2F2F2;
+  --accent:    #E8A020;
+  --accent-d:  #B87A10;
+  --accent-l:  #FDF3E0;
+  --accent-m:  #F5C96A;
+  --blue:      #E8A020;
+  --blue-l:    #FDF3E0;
+  --blue-m:    #F5C96A;
+  --green:     #1a7a46;
+  --green-l:   #eaf7ef;
+  --green-m:   #a8dfbf;
+  --amber:     #B87A10;
+  --amber-l:   #FDF3E0;
+  --amber-m:   #F5C96A;
+  --teal:      #E8A020;
+  --teal-l:    #FDF3E0;
+  --r:         8px;
+  --r-sm:      5px;
+  --r-lg:      12px;
+  --sh:        0 1px 4px rgba(0,0,0,0.06), 0 2px 12px rgba(0,0,0,0.04);
+  --sh-lg:     0 4px 24px rgba(0,0,0,0.10), 0 1px 6px rgba(0,0,0,0.06);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink);font-size:16px;line-height:1.55;min-height:100vh}
+button{font-family:inherit;cursor:pointer}
+
+/* ── HEADER ─────────────────────────────── */
+.hdr{
+  background:var(--ink);
+  height:62px;
+  display:flex;align-items:center;
+  padding:0 32px;gap:20px;
+  position:sticky;top:0;z-index:200;
+  border-bottom:1px solid rgba(255,255,255,0.06);
+}
+.brand{
+  display:flex;align-items:center;gap:11px;
+  text-decoration:none;
+}
+.brand-mark{
+  width:34px;height:34px;border-radius:6px;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;overflow:hidden;background:transparent;
+}
+.brand-mark img{width:100%;height:100%;object-fit:contain}
+.brand-logo{height:24px;display:block}
+.brand-name,.brand-tag{display:none}
+.hdr-divider{width:1px;height:24px;background:rgba(255,255,255,0.12)}
+.hdr-nav{display:flex;gap:6px;align-items:center}
+.hdr-step{
+  display:flex;align-items:center;gap:6px;
+  font-size:11px;font-weight:500;color:rgba(255,255,255,0.35);
+  padding:4px 10px;border-radius:20px;cursor:pointer;
+  transition:all 0.15s;border:none;background:none;
+}
+.hdr-step.done{color:rgba(255,255,255,0.6);cursor:pointer}
+.hdr-step.done:hover{background:rgba(255,255,255,0.08);color:#fff}
+.hdr-step.active{background:rgba(232,160,32,0.18);color:#E8A020;font-weight:600}
+.hdr-step-num{
+  width:18px;height:18px;border-radius:50%;
+  background:rgba(255,255,255,0.1);
+  display:flex;align-items:center;justify-content:center;
+  font-size:9px;font-weight:700;font-family:'Courier New',monospace;
+  flex-shrink:0;
+}
+.hdr-step.done .hdr-step-num{background:var(--green);color:#fff}
+.hdr-step.active .hdr-step-num{background:var(--accent);color:#fff}
+.hdr-step-arr{color:rgba(255,255,255,0.15);font-size:10px}
+.hdr-actions{margin-left:auto;display:flex;gap:8px;align-items:center}
+.hdr-btn{
+  padding:6px 14px;border-radius:var(--r-sm);
+  font-size:11px;font-weight:600;border:none;
+  background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.7);
+  letter-spacing:0.02em;transition:all 0.15s;
+}
+.hdr-btn:hover{background:rgba(255,255,255,0.18);color:#fff}
+
+/* ── HERO BAND (step label) ────────────────── */
+.step-band{
+  background:var(--surface);
+  border-bottom:1px solid var(--rule);
+  padding:18px 32px;
+  display:flex;align-items:center;gap:16px;
+}
+.step-band-num{
+  width:36px;height:36px;border-radius:50%;
+  background:var(--accent);color:#fff;
+  font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-weight:700;font-size:16px;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.step-band-title{font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-weight:700;font-size:22px;color:var(--ink)}
+.step-band-desc{font-size:13px;color:var(--muted);margin-top:2px}
+.step-band-progress{
+  margin-left:auto;display:flex;gap:3px;align-items:center;
+}
+.prog-pip{width:28px;height:3px;border-radius:2px;background:var(--rule-2);transition:background 0.3s}
+.prog-pip.done{background:var(--green)}
+.prog-pip.active{background:var(--accent)}
+
+/* ── LAYOUT ─────────────────────────────── */
+.page{max-width:1100px;margin:0 auto;padding:28px 24px 80px;display:grid;grid-template-columns:1fr 300px;gap:24px;align-items:start}
+@media(max-width:820px){.page{grid-template-columns:1fr}.sidebar{display:none}}
+.content>*{animation:fadeUp 0.22s ease both}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── CARDS ─────────────────────────────── */
+.card{background:var(--surface);border:1px solid var(--rule);border-radius:var(--r-lg);padding:20px 24px;margin-bottom:14px;box-shadow:var(--sh)}
+.card-hd{font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-weight:600;font-size:15px;color:var(--ink);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.card-hd-icon{width:26px;height:26px;border-radius:6px;background:var(--surface-2);border:1px solid var(--rule);display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
+
+/* ── HELP BOX ─────────────────────────── */
+.help{
+  background:var(--blue-l);border:1px solid var(--blue-m);
+  border-radius:var(--r-sm);padding:12px 14px;
+  display:flex;gap:10px;font-size:12px;color:#7A5C1A;line-height:1.6;
+  margin-bottom:14px;
+}
+.help-icon{font-size:16px;flex-shrink:0;margin-top:-1px}
+.help b{color:#1A1A1A}
+.warn{background:var(--amber-l);border-color:var(--amber-m);color:#7A5C1A}
+.tip{background:var(--green-l);border-color:var(--green-m);color:#0f5430}
+
+/* ── OPTION CARDS ──────────────────────── */
+.opt-grid{display:grid;gap:9px}
+.g2{grid-template-columns:1fr 1fr}
+.g3{grid-template-columns:1fr 1fr 1fr}
+.g4{grid-template-columns:1fr 1fr 1fr 1fr}
+
+.opt{
+  border:1.5px solid var(--rule-2);border-radius:var(--r);
+  padding:13px 15px;cursor:pointer;background:var(--surface);
+  transition:border-color 0.14s,background 0.14s,box-shadow 0.14s;
+  user-select:none;position:relative;
+}
+.opt:hover{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-l)}
+.opt.sel{border-color:var(--accent);background:var(--accent-l);box-shadow:0 0 0 3px rgba(232,160,32,0.12)}
+.opt.sel-blue{border-color:var(--blue);background:var(--blue-l)}
+.opt.dimmed{opacity:0.38;pointer-events:none}
+.opt-title{font-size:13px;font-weight:600;color:var(--ink);display:flex;align-items:center;justify-content:space-between;gap:8px}
+.opt.sel .opt-title,.opt.sel-blue .opt-title{color:var(--accent-d)}
+.opt.sel-blue .opt-title{color:var(--blue)}
+.opt-desc{font-size:11px;color:var(--muted);margin-top:4px;line-height:1.45}
+.opt.sel .opt-desc{color:rgba(184,122,16,0.85)}
+.opt-pn{font-family:'Courier New',monospace;font-size:10px;background:var(--surface-2);border:1px solid var(--rule-2);padding:2px 6px;border-radius:3px;color:var(--ink);font-weight:600;margin-top:6px;display:inline-block}
+.opt.sel .opt-pn{background:rgba(255,255,255,0.7)}
+
+/* Big category cards */
+.cat-card{
+  border:1.5px solid var(--rule-2);border-radius:var(--r-lg);
+  padding:24px 22px;cursor:pointer;background:var(--surface);
+  transition:all 0.15s;position:relative;overflow:hidden;
+}
+.cat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:transparent;transition:background 0.15s}
+.cat-card:hover{border-color:var(--accent);transform:translateY(-2px);box-shadow:var(--sh-lg)}
+.cat-card:hover::before{background:var(--accent)}
+.cat-card.sel{border-color:var(--accent);background:var(--accent-l)}
+.cat-card.sel::before{background:var(--accent)}
+.cat-icon{font-size:32px;margin-bottom:12px}
+.cat-title{font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-weight:700;font-size:18px;margin-bottom:6px}
+.cat-desc{font-size:12px;color:var(--muted);line-height:1.6}
+.cat-chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:12px}
+.chip{font-size:10px;padding:2px 8px;border-radius:20px;border:1px solid var(--rule-2);color:var(--muted);background:var(--surface-2)}
+.cat-card.sel .chip{background:rgba(255,255,255,0.6);border-color:rgba(232,160,32,0.2);color:var(--accent-d)}
+
+/* ── BADGES ─────────────────────────────── */
+.badge{display:inline-block;font-size:10px;font-weight:600;padding:2px 7px;border-radius:3px;letter-spacing:0.02em}
+.b-orange{background:var(--accent-l);color:var(--accent-d)}
+.b-blue{background:var(--blue-l);color:var(--blue)}
+.b-green{background:var(--green-l);color:var(--green)}
+.b-amber{background:var(--amber-l);color:var(--amber)}
+.b-ink{background:rgba(13,17,23,0.08);color:var(--ink-2)}
+
+/* ── FIELDS ─────────────────────────────── */
+.fields{display:grid;gap:12px}
+.f2{grid-template-columns:1fr 1fr}
+.f3{grid-template-columns:1fr 1fr 1fr}
+.field{display:flex;flex-direction:column;gap:5px}
+.field label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:var(--muted)}
+.field input,.field select{
+  padding:9px 12px;border:1.5px solid var(--rule-2);border-radius:var(--r-sm);
+  background:var(--surface);font-size:13px;color:var(--ink);font-family:inherit;
+  transition:border-color 0.14s;
+}
+.field input:focus,.field select:focus{outline:none;border-color:var(--accent)}
+.field-hint{font-size:11px;color:var(--ghost)}
+.result-box{
+  background:var(--surface-2);border-radius:var(--r-sm);border:1px solid var(--rule);
+  padding:12px 14px;margin-top:12px;
+}
+.result-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--ghost);margin-bottom:4px}
+.result-val{font-size:26px;font-weight:700;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif}
+.result-val.ok{color:var(--green)}
+.result-val.warn{color:var(--amber)}
+.result-val.bad{color:var(--accent)}
+.torque-track{height:6px;background:var(--rule-2);border-radius:3px;overflow:hidden;margin-top:8px}
+.torque-fill{height:100%;border-radius:3px;transition:width 0.5s,background 0.5s}
+
+/* ── WIPE ANGLE PILLS ─────────────────────── */
+.angle-grid{display:flex;flex-wrap:wrap;gap:7px}
+.angle-pill{
+  padding:7px 16px;border-radius:20px;border:1.5px solid var(--rule-2);
+  font-size:13px;font-weight:600;cursor:pointer;background:var(--surface);
+  transition:all 0.14s;color:var(--ink-3);
+}
+.angle-pill:hover{border-color:var(--accent);color:var(--accent)}
+.angle-pill.sel{background:var(--accent);border-color:var(--accent);color:#fff}
+
+/* ── MOTOR CARDS ──────────────────────────── */
+.motor-card{
+  border:1.5px solid var(--rule-2);border-radius:var(--r);
+  padding:16px 18px;cursor:pointer;background:var(--surface);
+  transition:all 0.14s;
+}
+.motor-card:hover{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-l)}
+.motor-card.sel{border-color:var(--accent);background:var(--accent-l);box-shadow:0 0 0 3px rgba(232,160,32,0.1)}
+.motor-card.rec{border-color:var(--green)}
+.motor-card.rec.sel{background:var(--accent-l);border-color:var(--accent);box-shadow:0 0 0 3px rgba(232,160,32,0.1)}
+.motor-card.dimmed{opacity:0.35;pointer-events:none}
+.motor-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:8px}
+.motor-name{font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-weight:600;font-size:14px}
+.motor-specs-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-top:10px}
+.ms{background:rgba(0,0,0,0.04);border-radius:4px;padding:6px 8px}
+.motor-card.sel .ms,.motor-card.rec.sel .ms{background:rgba(255,255,255,0.55)}
+.ms-k{font-size:9px;color:var(--ghost);text-transform:uppercase;letter-spacing:0.05em}
+.ms-v{font-size:12px;font-weight:600;margin-top:1px}
+
+/* ── WIRING ──────────────────────────────── */
+.wire-row{display:flex;align-items:center;gap:9px;padding:6px 0;border-bottom:1px solid var(--rule)}
+.wire-row:last-child{border-bottom:none}
+.wire-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0}
+.wire-func{font-size:12px;color:var(--ink-2)}
+
+/* ── PN BUILDER ───────────────────────────── */
+.pn-builder{background:var(--ink);border-radius:var(--r-lg);padding:22px 24px;color:#fff;margin-bottom:14px}
+.pn-builder-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:rgba(255,255,255,0.35);margin-bottom:14px}
+.pn-segs{display:flex;flex-wrap:wrap;gap:6px;align-items:flex-end;margin-bottom:14px}
+.pn-seg{display:flex;flex-direction:column;align-items:center;gap:4px}
+.pn-seg-v{
+  font-family:'Courier New',monospace;font-size:17px;font-weight:500;
+  background:rgba(255,255,255,0.07);color:#F5C96A;
+  padding:6px 12px;border-radius:6px;min-width:32px;text-align:center;
+  border:1px solid rgba(255,255,255,0.1);
+}
+.pn-seg-v.hi{background:rgba(232,160,32,0.22);border-color:rgba(232,160,32,0.45);color:#E8A020}
+.pn-seg-l{font-size:9px;color:rgba(255,255,255,0.3);text-align:center;max-width:58px;line-height:1.3}
+.pn-sep{font-family:'Courier New',monospace;font-size:17px;color:rgba(255,255,255,0.2);padding-bottom:20px}
+.pn-full{font-family:'Courier New',monospace;font-size:20px;font-weight:500;color:#fff;background:rgba(255,255,255,0.05);padding:12px 16px;border-radius:7px;border:1px solid rgba(255,255,255,0.1);letter-spacing:0.05em;word-break:break-all}
+
+/* ── BOM TABLE ───────────────────────────── */
+.bom{width:100%;border-collapse:collapse;font-size:12px}
+.bom th{text-align:left;padding:8px 12px;background:var(--surface-2);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--muted);border-bottom:1px solid var(--rule)}
+.bom td{padding:10px 12px;border-bottom:1px solid var(--rule);vertical-align:top}
+.bom tr:last-child td{border-bottom:none}
+.bom tr:hover td{background:var(--blue-l)}
+.bom-pn{font-family:'Courier New',monospace;font-size:12px;font-weight:600;color:var(--ink)}
+.bom-role{font-weight:600;color:var(--muted);font-size:11px}
+.bom-note{font-size:10px;color:var(--ghost);margin-top:2px}
+
+/* ── SPEC GRID ───────────────────────────── */
+.spec-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.spec-tile{background:var(--surface-2);border-radius:var(--r-sm);padding:10px 12px;border:1px solid var(--rule)}
+.spec-k{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:var(--ghost);margin-bottom:3px}
+.spec-v{font-size:15px;font-weight:700;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;color:var(--ink)}
+.spec-sub{font-size:10px;color:var(--muted)}
+
+/* ── SIDEBAR ──────────────────────────────── */
+.sidebar{position:sticky;top:90px}
+.sb-card{background:var(--surface);border:1px solid var(--rule);border-radius:var(--r-lg);overflow:hidden;box-shadow:var(--sh-lg)}
+.sb-hdr{background:var(--ink-2);padding:14px 18px}
+.sb-hdr-title{font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-weight:700;font-size:13px;color:#e8e4dc}
+.sb-hdr-sub{font-size:11px;color:rgba(255,255,255,0.35);margin-top:2px}
+.sb-section{padding:12px 16px;border-bottom:1px solid var(--rule)}
+.sb-section:last-child{border-bottom:none}
+.sb-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--ghost);margin-bottom:8px}
+.sb-row{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:5px}
+.sb-row:last-child{margin-bottom:0}
+.sb-k{font-size:11px;color:var(--muted)}
+.sb-v{font-size:11px;font-weight:600;color:var(--ink);text-align:right}
+.sb-pn{font-family:'Courier New',monospace;font-size:10px;color:var(--blue);background:var(--blue-l);padding:2px 6px;border-radius:3px}
+.sb-empty{font-size:11px;color:var(--ghost);font-style:italic;padding:6px 0;text-align:center}
+.sb-status{padding:10px 16px;display:flex;align-items:center;gap:8px;font-size:11px;font-weight:500}
+.sb-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+
+/* ── NAV ROW ─────────────────────────────── */
+.nav-row{display:flex;gap:10px;margin-top:20px}
+.btn{padding:10px 22px;border-radius:var(--r-sm);font-size:13px;font-weight:600;border:none;transition:all 0.14s;display:inline-flex;align-items:center;gap:7px;letter-spacing:0.01em}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-primary:hover{background:var(--accent-d)}
+.btn-primary:disabled{opacity:0.38;cursor:not-allowed}
+.btn-ghost{background:var(--surface);color:var(--ink-3);border:1.5px solid var(--rule-2)}
+.btn-ghost:hover{border-color:var(--ink-3);background:var(--surface-2)}
+.btn-print{background:var(--green-l);color:var(--green);border:1px solid var(--green-m)}
+.btn-print:hover{background:var(--green-m)}
+.btn-reset{background:transparent;color:var(--ghost);border:none;font-size:12px;padding:8px;margin-left:auto}
+.btn-reset:hover{color:var(--ink-3)}
+
+/* ── LINKAGE TABLE ─────────────────────────── */
+.linkage-row{
+  display:flex;align-items:flex-start;gap:12px;padding:11px 14px;
+  border:1.5px solid var(--rule-2);border-radius:var(--r-sm);
+  cursor:pointer;transition:all 0.14s;margin-bottom:7px;background:var(--surface);
+}
+.linkage-row:hover{border-color:var(--blue)}
+.linkage-row.sel{border-color:var(--blue);background:var(--blue-l)}
+.linkage-row:last-child{margin-bottom:0}
+.linkage-angle{
+  font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-weight:700;font-size:20px;
+  min-width:52px;color:var(--ink);
+}
+.linkage-row.sel .linkage-angle{color:var(--blue)}
+.linkage-parts{flex:1}
+.linkage-pns{display:flex;flex-wrap:wrap;gap:5px;margin-top:4px}
+
+/* ── PIVOT TABLE ─────────────────────────── */
+.pivot-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.pivot-card{
+  border:1.5px solid var(--rule-2);border-radius:var(--r-sm);
+  padding:10px 12px;cursor:pointer;background:var(--surface);
+  transition:all 0.14s;
+}
+.pivot-card:hover{border-color:var(--blue)}
+.pivot-card.sel{border-color:var(--blue);background:var(--blue-l)}
+.pivot-len{font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-weight:700;font-size:16px}
+
+@media print{
+  .hdr,.step-band,.nav-row,.hdr-btn,.sidebar,.btn-reset{display:none!important}
+  .page{display:block;padding:0;max-width:100%}
+  body{background:#fff}
+}
+
+/* ── ANIMATIONS ──────────────────────────── */
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+</style>
+</head>
+<body>
+
+<header class="hdr">
+  <a class="brand" href="#">
+    <div class="brand-mark"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAACXBIWXMAAC4jAAAuIwF4pT92AAAEMklEQVRYhcVXTUhcVxT+7vuZ+6Y6DsE6NRRDHaRjTElrm2jNShJItbhqIE2ybiBjQ92YQiFokK5aoXHRak32NRDqpnEdFITEFHFV0zDQZOi8DkV0ZnT+Z74u5ie+jDO+GQo5cBfvnHvP/c53ft57QpPybwAuvB6JCU1KNnJSCIFcLod8JgNNyoYRKABijRzM5/PI53KAEMim043eH1MaPZlLp9HR0YGlpSXoUjYMomEAADAyMoLhoSF8cv48QAJC1O1DaFJGUWcRZtNpgEQgEIDX68Wjx4/xcX8/hKJA1fV6XDWQAiEAEp+OjMDr9QIA+vv68OHp02A+D1EnC3UDyBVz/e3UlEVfes5ls3X5qysFQghkkkn0DQzg0epqhb2zqwt/BQLQDQOkre6uLwWl6KYmJw+0T9y8adlnR2wzUIre29WFwLNnB+4hida2NmxvbdllwT4DpagmJyZqgvz6xg0AhUFlR2wxUIr+TY8H/4bDNR0mEgm4jxxBJpWCZhiF+VBd7DFQimZ8fNyiT2cy+O3BA4vO6XTC7/cDgL1C1KSMalKy6jIMAqBuGIzH49wvq6urBMBgMGjRm6ZJAIQQ1f0WVvRQBkpR+K9dg9PptNjm794FAPw0N2fRt7e34+Lly4fRb48BCEEADIfDlii3trbKtiaXi+l02mLf3Ny0w8LhDIDE51euwOPxWNTfTU8DJBRdx14shh9nZy12n8+HwXPnDn9J1WKgFOEfm5uW6FKpFJ1NTeXaAMC3jh7lq7K8skIAFKpalYHqAIqOB8+erXD8w+3bBEBF16lJSUXTCIC/LCxU7H3v5Mky0LoACEWhlJLb29skyY2NDf48P8+vxsbY7HYTQlBoGqGqVBwOAmD3iRMVAH5dXCyA1bT6AADg+729nL9zhx+dOlUoKBtr4d69ChBvHztWjYVozUmo6TqSu7vlZ2dTEwYHB3HmzAA63+mEu6UFBLCzs4PnL15g+eFDqA4HFu/fh2EY5XOzc3MY9fuh6DoUxVL3saoMlIoLAI/39HBmZoamaVZE96qEw2Emk0mLLpPJFNJWycIBKTAMqsUUqLrG76enD73UjkzculXw6XDUAGAYVHWdAPhBby+f/vn0f7mcJCORSLlbtJcsRFVF074BICEEmM8jl8lgaHgYK8vLaG1trTo/gsEgAoEAQqEQstks3G539WEDQEqJkGni9ydPIFQVxdGULjOgFlvpswsXqkaxvr7OsbExHu/pKXcKAGoOB33d3fzy+nWura1VPR+LRqkX76lIAYTguz4fd/f2SJLxeLy8TNOkf3TUdit+cfUqQ6EQE4mEZZHkxUuXLABetiGJNo8Hzc3NiEQiFvr2dnexFyv8wdX8yBAC2WQSAPCGy4UWlwv7dypCQNU0/GOapffDvp/TfYcPElVK1PPFn02lqtr2ByFe9+/5f0h09DvBxw5QAAAAAElFTkSuQmCC" alt="Autotex"></div>
+    <img class="brand-logo" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGMAAAAeCAYAAAA4h6CKAAAJvElEQVR42u1aeYyV1RX/nfdmsTgIMzhYRwSE1mKLEwGttVVoq7WmVaNVaylohJgumIZibKWtpYugxthalmgTXLqIdDHWlNrSII6tg4y0hSoZxAWMiFDZBllm5r357/v1D3+XHO58b2bQGVqTucmX73333HvuuWe755z7gB42kgNJztRvQ387+o1klqSR/BzJNpJ1+s70c+foCyOj93K+3ebpu6yfO/8bqziTZFHPTpLV6u93V0dTGHovlVW06z2rr62DZCZ67L2Evy+YYSRHSwgJyYLem0lW9ltH77auNDtjZgWS3wBQCaCg8UUApwC40syWyDoKvagEZmYkuRDAqQA6AJQDWGBmj5PMmlmxF9ZZDGC429cdZtbQW/h70ypMTy3JFllDojMjWMe/gon3xA2UWKPTGPe9gYe3meqv7ILmrHtSXY9bd0uEf5r6K3qKv4fur8fjSllGVlZxPYDBTnsMAPWMB3C+ma1I0yYzS7oSuJkFPEibR7JFVpiTZb4lWC4l2jOtXyxx7iVa79C6JPcCqAOQB1Dh8OdjIchLdMIfwUruO1h79J1066a0QJHkAAAzxLCsBLIewDgRlQHwLQArYqYKx1htEoI3m1nOuaEqAB8SzAAcNLONJKsBjAIwSOuW6X0qyQka+5yZdXglIDkIwBgAJ4jWLQBecPCMmSUka+Rmj43wnyb8FP5imCN+HC/8QwC0AthsZpsE83SM864ewD4ze9btO7xHAah2yl2RZj5lek+X+ebkltaSHEGy1bmshOR4Z8KmuZUk34jcwAcEK9d7UgRfp/7L9V1kemsneaJbazjJe0luj8YlJJtJziJZ5sZfI3ihBP69JAe78cNILlZI71uO5N9IXqRxFXrPjsa1kjw72vtorePb/K5843q3KEneIPgv9N2m9xKfkwTCSL7qzpoOkqMjgiYKFoS9Rv2XucjNtyD8/SSHaeynSe5wYzqcIPz8p0jWas61jqY0/DtJDglaTnKrG1NwY72y3Bwp8rIoFVgj/lQK3hDBGzqdbw7ZxW5zCcltJI+ToMaKqEB8O8lRQYiRMPwm0oRBknm9/xFZRinNzZGs0ZoHIhxUX94xLSjT3yPL6CiBv4VkFclB7pDPOfj+SPiBzkudUtaKZ4mbO0fwGx3NRVnIiK5KH08JUasm/iAyxT9G1nF3JMzydyCMJvUPJlmfYpm3qn+8xj0WudFdJCeTPElu4LYUgUyVUo0juSlaf3aE/8eR9r5G8lK56glu/bzW36h9Bx5cGDG9neR1JPfpO6x7dacE2mn1WZFW5ki+X5ofGHmeY3IibTreual3IozVkWI0RcyY7mAjHBMCrVekKNevHY4iyVUO1hwJ+woHKyf5inNnxeD3I/wbIis7N5yZet9ewsrD92IviLTQdp6iixYAWwH8BsAOJV6JrGM1gCYAH1OoORjA9WZ2h4urGb2PpARDRSK+VTrcZ4qekBBuA7DMzc0CSAA8AGCqvjOKmKoBvJWC/xiHfwSAkYrcyhTuTiZ5paOt4PaW6PdZABrFpyyAWwBMAnCOi0AT0fMCgJkaVzwkDIVwRUU8+wFMAdBoZlscsXH8fSuAx7UAAcwguQBA27vNORWCpvZr7RMcEwBgq5nlXdgI4dgu2oLSDQRQbWYtKQmhxz9EDAthdwWA73RVrdC4WqeA4ZkMYAOA94VURIKcYmatCot5SBguAdlmZt5chwP4uPKBGnXvBvASgHUAmgF8RBp6MoAvmdkDTkP7qnU4RkFJYVq+VO4SVZPwCj2w2HyMDkC7Y6Y5IcHRUXZ4/moJyQtFX+JoyQK4SDy0TkmfJNSq35cA+CqATyo5Sms5R2CwjlkkfxmZcIBnJaSM3tk4+e5GACbfSgCbND7gGK3QdZfcaMbM2kmeIXhBgtkpl5smDHOH6OvyEAM1rgPARCmiF3yrYDXa405nZUWSYwEscvzJOIu5jWSjmT19WAXDRQBjSP45JZRsi55cSkgYDqWLddjH0dAXI829KTqgm6JA4ukIvtDNrVI+4KOSeyL8NTqkfXj5sIOvjfDPjeaviOb+JMX6xoer6JQ8rZLkcxFvNkTfryqEfruG5QRxlcsKCyUYHreOFGE0Ct8jLqxMFBp+geQZCjF3RMlXUxRtPeyYnSgk/IpwlLlMt90lYCvUP1fRUKAr0DbBRXx/ivDvVeh5mfKkC6LQlCSfJfkjkt8l+ajDew/JARJC4OeiSBk36lKuMepfelhoKyJCmBjuLkKMvorkfGnyTSR/JoQFl+126Mmp/4MkP+MWLURlCkZCL5B8JhLGtBRmh1anjT/h6MyXSBBD+3aUK32zBP5Wl4EccDSX8gah/3vOOi5xeVhQxomDna418y5Pmxomziih9Q+SrO8iBB1L8r4Sc5/UmN+XgBekmb49H5WWB5BcV2J+KIcMIHl/N9a7h+TXo2tkU3L5UgkBVjsLmtdFth4UYSHJoc7Vx4L7aZR/3JyC56NGcpoON7qD9GUza3BRSXzYFkM4RnKSoq3ERRkFAEsUlcwAcDmAk/T9PIB7AWxXHlAMcbeZzQhMUIg6FMAcAJ8AcAyAPQCWA7gTQN7RcDaAqxXn1wrnawAaACw1s62uAusvsIYJ/9mKjHYBWAbgbu0hRET1CvfPATBUvNoO4FkAvzWzfzslnQPgAgU4ZTr0r4lL/wAe1OVWUfxf392fETLdXMtmu7uk8nWv6DvTxZ17Ns4Dgvtyh2RZeNIubeK5zuKympeJ8R0Bfkuj+922UNxLS4B6dPV4pPNJlplZIU243V1I/R/+hSmji6skrcYX8YMlKg2HLqWsjwgNbqAOwFUyxRcBtJrZKtVwdiiPMQCP6fvzyuo/C2Cl3EciUx8ld/iIEsx6AG8C2AzgUwD+I1gC4DwApwm+V3lDtVzPGLmyh+R2Tlbe0qr11qoUFGh7AsCHlXME14uYuX39h4Te0Jy8btXqAcxWovNDADeK2VN0U5iV8K8TM5cCmA7gfN3YUTeHr8ift+mc+YvOinIlZZVm9iuSXxMZK1Vfu08+fp7wrgEwX7eJb2jMtTrPvg/gLp1TLRLyXAALgyb3hSCQUizrlSZizcx2AXgUwDNmtkabn6zD8oDb7F5NfUhMWgTgdgBPShh5WddIMXif0/g3JahjAYSq7D7h3mlm/5RVHDSzZhU1awH8VULdozV2SwAHzWy5Cn4rAfwBwP0q+J0ipcm8Z4QRHeBVKoFkALxoZje4csZxulMfqSmrVV64S4xa7e7f9wOYb2Y/V9+JqpsNknt6XWuF8kcdgLH6q9HvABwg+WXV024xsyUS4HAA52rdMK5KZY9ywYNry/Ylv/4Lx+RwgQiVkjcAAAAASUVORK5CYII=" alt="Autotex Marine">
+    <div>
+      <div class="brand-name">Autotex Marine</div>
+      <div class="brand-tag">THE WIPER EXPERTS</div>
+    </div>
+  </a>
+  <div class="hdr-divider"></div>
+  <nav class="hdr-nav" id="hdrNav"></nav>
+  <div class="hdr-actions">
+    <button class="hdr-btn" onclick="window.print()">Print</button>
+    <button class="hdr-btn" onclick="resetApp()">Start Over</button>
+  </div>
+</header>
+
+<div class="step-band" id="stepBand">
+  <div class="step-band-num" id="stepBandNum">1</div>
+  <div>
+    <div class="step-band-title" id="stepBandTitle">Choose Your Motor</div>
+    <div class="step-band-desc" id="stepBandDesc">Select based on your required arm length.</div>
+  </div>
+  <div class="step-band-progress" id="stepProgress"></div>
+</div>
+
+<div class="page">
+  <div class="content" id="root"></div>
+  <div class="sidebar">
+    <div class="sb-card">
+      <div class="sb-hdr">
+        <div class="sb-hdr-title">Your Build</div>
+        <div class="sb-hdr-sub">Autotex Marine System Builder</div>
+      </div>
+      <div id="sidebarBody"></div>
+      <div class="sb-status" id="sidebarStatus">
+        <div class="sb-dot" style="background:var(--ghost)"></div>
+        <span style="color:var(--muted)">Begin selecting to build your system</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════
+// DATA
+// ═══════════════════════════════════════════════════════════════
+
+const MARINE_MOTORS = {
+  '4A':{name:'4A Sealed Motor',badge:'IP66 · Sealed',torqueDesc:'~30 Nm',low:'40 sw/min',high:'60 sw/min',
+    shaftType:'½" Drum',shaftOptions:['1.5in','2.5in','3.5in'],fusing:'12A (12v) / 7A (24v)',
+    park:'Coast-to-Park',maxBlade:600,
+    wiring:[{c:'#e53935',f:'Park'},{c:'#43a047',f:'Low speed'},{c:'#ffffffcc',f:'Ground',bdr:true},{c:'#1e88e5',f:'High speed'}],
+    buildPN:(s)=>{const m={'1.5in':'1','2.5in':'2','3.5in':'3'};const col=s.color==='black'?'B':'';return `4A${m[s.shaft]||'2'}.${s.voltage==='12v'?'12':'24'}.${s.park==='right'?'R':'L'}110CE${col}`}},
+  '4R':{name:'4R WWF Motor',badge:'Medium duty',torqueDesc:'~25 Nm',low:'35 sw/min',high:'55 sw/min',
+    shaftType:'½" Drum',shaftOptions:['1.5in','2.5in','3.5in'],fusing:'12A (12v) / 7A (24v)',
+    park:'Coast-to-Park',maxBlade:600,
+    wiring:[{c:'#e53935',f:'Park'},{c:'#43a047',f:'Low speed'},{c:'#ffffffcc',f:'Ground',bdr:true},{c:'#1e88e5',f:'High speed'}],
+    buildPN:(s)=>{const m={'1.5in':'1','2.5in':'2','3.5in':'3'};return `4R${m[s.shaft]||'2'}.${s.voltage==='12v'?'12':'24'}.R110CE`}},
+  'MD':{name:'Marine Compact Drive',badge:'32 Nm · DIN',torqueDesc:'32 Nm',low:'40 sw/min',high:'60 sw/min',
+    shaftType:'DIN A12xM8',shaftOptions:['1in','1.25in','2in','2.5in','3in'],fusing:'12A min',
+    park:'Dynamic or Coast-to-Park',maxBlade:800,
+    wiring:[{c:'#333',f:'Park',bdr:true},{c:'#e53935',f:'High speed'},{c:'#43a047',f:'Low speed'},{c:'#795548',f:'Ground'},{c:'#1e88e5',f:'Switch'}],
+    buildPN:(s)=>{const m={'1in':'1','2in':'2','3in':'3','1.25in':'4','2.5in':'5'};const v=s.voltage==='12v'?'12':'24';const pk=s.park==='right'?'R':'L';const pc=s.parkCircuit==='dynamic'?'D':'C';const sw=String(s.sweep||80).padStart(3,'0');return `MD${m[s.shaft]||'2'}.${v}${pc}.${pk}${sw}`}},
+  'DD':{name:'Marine Dual Drive',badge:'56 Nm · Heavy',torqueDesc:'56 Nm',low:'40 sw/min',high:'60 sw/min',
+    shaftType:'DIN A12xM8',shaftOptions:['1in','1.25in','2in','2.5in','3in'],fusing:'20A min',
+    park:'Dynamic',maxBlade:1000,
+    wiring:[{c:'#333',f:'Park',bdr:true},{c:'#e53935',f:'High speed'},{c:'#43a047',f:'Low speed'},{c:'#795548',f:'Ground'},{c:'#1e88e5',f:'Switch'}],
+    buildPN:(s)=>{const m={'1in':'1','2in':'2','3in':'3','1.25in':'4','2.5in':'5'};const v=s.voltage==='12v'?'12':'24';const pk=s.park==='right'?'R':'L';const sw=String(s.sweep||80).padStart(3,'0');return `DD${m[s.shaft]||'2'}.${v}D.${pk}${sw}x`}},
+};
+
+const MARINE_ARMS = {
+  '4A-radial':[{pn:'200722DS',len:'8–11"',mm:'201–280',swivel:'No'},{pn:'201211DS',len:'11–14"',mm:'280–350',swivel:'No'},{pn:'200720DS',len:'11–14"',mm:'280–350',swivel:'Yes'},{pn:'200704DS',len:'14–18"',mm:'250–450',swivel:'Yes'},{pn:'200705DS',len:'18–22"',mm:'450–550',swivel:'Yes'},{pn:'200706DS',len:'20–24"',mm:'500–600',swivel:'Yes'}],
+  '4A-panto':[{pn:'200733DS',len:'11–14"',mm:'280–350'},{pn:'200701DS',len:'14–18"',mm:'350–450'},{pn:'200703DS',len:'20–24"',mm:'500–600'}],
+  '4R-radial':[{pn:'200722DS',len:'8–11"',mm:'201–280',swivel:'No'},{pn:'201211DS',len:'11–14"',mm:'280–350',swivel:'No'},{pn:'200720DS',len:'11–14"',mm:'280–350',swivel:'Yes'},{pn:'200704DS',len:'14–18"',mm:'250–450',swivel:'Yes'},{pn:'200705DS',len:'18–22"',mm:'450–550',swivel:'Yes'},{pn:'200706DS',len:'20–24"',mm:'500–600',swivel:'Yes'}],
+  '4R-panto':[{pn:'200733DS',len:'11–14"',mm:'280–350'},{pn:'200701DS',len:'14–18"',mm:'350–450'},{pn:'200703DS',len:'20–24"',mm:'500–600'}],
+  'MD-radial':[{pn:'200711DS',len:'20–24"',mm:'500–600',swivel:'Yes'},{pn:'2012132DS',len:'26–32"',mm:'650–800',swivel:'No'}],
+  'MD-panto':[{pn:'200708DS',len:'20–24"',mm:'500–600'},{pn:'200712DS',len:'26–32"',mm:'650–800'}],
+  'DD-radial':[{pn:'200708DS',len:'20–24"',mm:'500–600'},{pn:'200712DS',len:'26–32"',mm:'650–800'},{pn:'200713DS',len:'32–36"',mm:'800–900'},{pn:'200719DS',len:'38–40"',mm:'950–1000'}],
+  'DD-panto':[{pn:'200708DS',len:'20–24"',mm:'500–600'},{pn:'200712DS',len:'26–32"',mm:'650–800'},{pn:'200713DS',len:'32–36"',mm:'800–900'},{pn:'200719DS',len:'38–40"',mm:'950–1000'}],
+};
+
+const MARINE_BLADES = {
+  '4A':[{pn:'13609M',len:'9"'},{pn:'13610M',len:'10"'},{pn:'13611M',len:'11"'},{pn:'13612M',len:'12"'},{pn:'13614M',len:'14"'},{pn:'13616M',len:'16"'},{pn:'13618M',len:'18"'},{pn:'13620M',len:'20"'},{pn:'13622M',len:'22"'},{pn:'13624M',len:'24"'}],
+  '4R':[{pn:'13609M',len:'9"'},{pn:'13610M',len:'10"'},{pn:'13611M',len:'11"'},{pn:'13612M',len:'12"'},{pn:'13614M',len:'14"'},{pn:'13616M',len:'16"'},{pn:'13618M',len:'18"'},{pn:'13620M',len:'20"'},{pn:'13622M',len:'22"'},{pn:'13624M',len:'24"'}],
+  'MD':[{pn:'13616M',len:'16"'},{pn:'13618M',len:'18"'},{pn:'13620M',len:'20"'},{pn:'13622M',len:'22"'},{pn:'13624M',len:'24"'},{pn:'13626M',len:'26"'},{pn:'13628M',len:'28"'},{pn:'13728SSM',len:'28" SS'},{pn:'13730SSM',len:'30" SS'},{pn:'13732SSM',len:'32" SS'}],
+  'DD':[{pn:'13620M',len:'20"'},{pn:'13622M',len:'22"'},{pn:'13624M',len:'24"'},{pn:'13626M',len:'26"'},{pn:'13628M',len:'28"'},{pn:'13728SSM',len:'28" SS Saddle'},{pn:'13730SSM',len:'30" SS Saddle'},{pn:'13732SSM',len:'32" SS Saddle'},{pn:'13734SSM',len:'34" SS Saddle'},{pn:'13736SSM',len:'36" SS Saddle'},{pn:'13738SSM',len:'38" SS Saddle'},{pn:'13740SSM',len:'40" SS Saddle'},{pn:'0120532SS21',len:'32" Wide Saddle'},{pn:'0120534SS21',len:'34" Wide Saddle'},{pn:'0120536SS21',len:'36" Wide Saddle'},{pn:'0120538SS21',len:'38" Wide Saddle'},{pn:'0120540SS21',len:'40" Wide Saddle'}],
+};
+
+
+
+
+
+
+// ═══════════════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════════════
+let S = {
+  step:0, category:'marine',
+  // Marine
+  m_motor:null, m_voltage:null, m_park:null, m_parkCircuit:null, m_sweep:null,
+  m_shaft:null, m_color:'white', m_armType:null, m_armPn:null, m_bladePn:null,
+};
+
+// ═══════════════════════════════════════════════════════════════
+// STEP DEFINITIONS
+// ═══════════════════════════════════════════════════════════════
+function getFlow() {
+  return [
+    {id:'m_motor',title:'Choose Your Motor',desc:'Select based on your required arm and blade length.'},
+    {id:'m_voltage',title:'System Voltage',desc:'What voltage is your vessel electrical system?'},
+    {id:'m_park',title:'Park Position',desc:'Where should the wiper arm rest when off?'},
+    {id:'m_sweep',title:'Sweep Angle',desc:'How many degrees should the wiper arc across the glass?'},
+    {id:'m_shaft',title:'Shaft & Color',desc:'Configure shaft length and motor finish.'},
+    {id:'m_arm',title:'Wiper Arm',desc:'Select arm style and length range.'},
+    {id:'m_blade',title:'Wiper Blade',desc:'Select the blade size for your windshield.'},
+    {id:'m_summary',title:'Complete System',desc:'Your marine wiper system — ready to order.'},
+  ];
+}
+function cur() { return getFlow()[S.step] || {id:'m_motor'}; }
+function totalSteps() { return getFlow().length; }
+
+function pick(k, v) { S[k]=v; render(); }
+function next() { if (canNext() && S.step < totalSteps()-1) { S.step++; render(); } }
+function back() { if (S.step > 0) { S.step--; render(); } }
+function goStep(i) { if (i <= S.step) { S.step=i; render(); } }
+function resetApp() { S={step:0,category:'marine',m_motor:null,m_voltage:null,m_park:null,m_parkCircuit:null,m_sweep:null,m_shaft:null,m_color:'white',m_armType:null,m_armPn:null,m_bladePn:null}; render(); }
+
+function canNext() {
+  const id = cur().id;
+  if (id==='m_motor') return !!S.m_motor;
+  if (id==='m_voltage') return !!S.m_voltage;
+  if (id==='m_park') return !!S.m_park;
+  if (id==='m_sweep') return !!S.m_sweep;
+  if (id==='m_shaft') return !!S.m_shaft;
+  if (id==='m_arm') return !!S.m_armPn && !!S.m_armType;
+  if (id==='m_blade') return !!S.m_bladePn;
+  return true;
+}
+
+
+
+function buildMarinePN() {
+  const m = MARINE_MOTORS[S.m_motor]; if (!m) return null;
+  return m.buildPN({shaft:S.m_shaft, voltage:S.m_voltage, park:S.m_park, parkCircuit:S.m_parkCircuit, sweep:S.m_sweep, color:S.m_color});
+}
+
+
+// ═══════════════════════════════════════════════════════════════
+// RENDERERS
+// ═══════════════════════════════════════════════════════════════
+function h(str) { return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function opt(k,v,title,desc,extra='') {
+  const sel = S[k]===v;
+  return `<div class="opt${sel?' sel':''}" onclick="pick('${k}','${v}')"><div class="opt-title">${h(title)}<span style="font-size:14px">${sel?'●':'○'}</span></div>${desc?`<div class="opt-desc">${desc}</div>`:''}${extra}</div>`;
+}
+function nav(label='Continue →', showBack=true) {
+  return `<div class="nav-row">${showBack&&S.step>0?`<button class="btn btn-ghost" onclick="back()">← Back</button>`:''}<button class="btn btn-primary" onclick="next()" ${canNext()?'':'disabled'}>${label}</button><button class="btn btn-reset" onclick="resetApp()">↺ Start over</button></div>`;
+}
+
+function renderStep() {
+  const id = cur().id;
+
+  // ── CATEGORY ──────────────────────────────────────────────────
+  if (id==='cat') return `
+    <div class="help"><span class="help-icon">⚓</span><div><b>Autotex Marine Wiper System Builder.</b> Select your motor, arm, and blade specifications. Receive exact part numbers for your complete system — motor, arm, blade, and accessories.</div></div>
+    <div class="opt-grid g2" style="gap:14px">
+      <div class="cat-card${S.category==='marine'?' sel':''}" onclick="pick('category','marine')">
+        <div class="cat-icon">⛵</div>
+        <div class="cat-title">Marine / Vessel</div>
+        <div class="cat-desc">Boats, yachts, ferries, patrol vessels. Stainless steel components rated for saltwater exposure.</div>
+        <div class="cat-chips"><span class="chip">4A Sealed</span><span class="chip">4R WWF</span><span class="chip">Compact MD</span><span class="chip">Dual Drive DD</span></div>
+      </div>
+      <div class="cat-card${S.category==='hd'?' sel':''}" onclick="pick('category','hd')">
+        <div class="cat-icon">🚛</div>
+        <div class="cat-title">Heavy Duty / Industrial</div>
+        <div class="cat-desc">Trucks, buses, construction equipment, agricultural vehicles, and industrial machinery.</div>
+        <div class="cat-chips"><span class="chip">J3 Motor</span><span class="chip">WEX</span><span class="chip">Bosch</span><span class="chip">WWF</span><span class="chip">JE/UT System</span></div>
+      </div>
+    </div>
+    ${nav('Let\'s get started →', false)}`;
+
+  // ══ MARINE STEPS ══════════════════════════════════════════════
+
+  if (id==='m_motor') {
+    const motorList = [
+      {k:'4A', rec:true, title:'4A Sealed Motor', desc:'IP66 sealed, CE certified. Drives arms to 24" / 600 mm. Coast-to-park, adjustable sweep 40–110°.', max:'Up to 24"'},
+      {k:'4R', title:'4R WWF Motor', desc:'Self-contained oscillating motor. Medium duty, no external linkage. Drives arms to 24" / 600 mm.', max:'Up to 24"'},
+      {k:'MD', title:'Marine Compact Drive', desc:'32 Nm torque. Arms 20–32". Wipe angle field-adjustable 40–108°. DIN A12×M8 shaft.', max:'20"–32"'},
+      {k:'DD', title:'Marine Dual Drive', desc:'56 Nm torque. Arms 32–40". Drives both pivots simultaneously via dual output.', max:'32"–40"'},
+    ];
+    return `
+      <div class="help"><span class="help-icon">💡</span><div><b>Select by arm/blade length requirement.</b> The 4A Sealed covers arms up to 24". For arms 20–32", use the Compact Drive (MD). For 32–40", use the Dual Drive (DD).</div></div>
+      <div class="opt-grid" style="gap:10px">
+        ${motorList.map(m=>`<div class="motor-card${S.m_motor===m.k?' sel':''} ${m.rec?'rec':''}" onclick="pick('m_motor','${m.k}')">
+          <div class="motor-top"><div><div class="motor-name">${m.title}</div><div style="font-size:11px;color:var(--muted);margin-top:2px">Max arm length: <b>${m.max}</b></div></div>${m.rec?'<span class="badge b-orange">RECOMMENDED</span>':''}</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:6px;line-height:1.5">${m.desc}</div>
+          <div class="motor-specs-grid" style="margin-top:10px">
+            <div class="ms"><div class="ms-k">Torque</div><div class="ms-v">${MARINE_MOTORS[m.k].torqueDesc}</div></div>
+            <div class="ms"><div class="ms-k">Low speed</div><div class="ms-v">${MARINE_MOTORS[m.k].low}</div></div>
+            <div class="ms"><div class="ms-k">Shaft</div><div class="ms-v">${MARINE_MOTORS[m.k].shaftType}</div></div>
+          </div>
+        </div>`).join('')}
+      </div>
+      ${nav()}`;
+  }
+
+  if (id==='m_voltage') return `
+    <div class="help"><span class="help-icon">⚡</span><div>Most recreational vessels run <b>12V</b>. Commercial vessels, large yachts, and many European boats use <b>24V</b>. Check your battery bank voltage if unsure.</div></div>
+    <div class="opt-grid g2" style="gap:10px">
+      ${opt('m_voltage','12v','12 Volt','Recreational boats, smaller yachts, most US vessels')}
+      ${opt('m_voltage','24v','24 Volt','Commercial vessels, large yachts, European boats')}
+    </div>
+    ${nav()}`;
+
+  if (id==='m_park') {
+    const needsCircuit = (S.m_motor==='MD'||S.m_motor==='DD');
+    return `
+      <div class="help"><span class="help-icon">🅿️</span><div><b>Park position</b> is where the arm rests when the wipers are off. Right-hand park is most common on vessels. Look at your windshield from the operator's seat to decide.</div></div>
+      <div class="card-hd" style="margin-top:4px;margin-bottom:10px">Park position</div>
+      <div class="opt-grid g2" style="gap:10px;margin-bottom:14px">
+        ${opt('m_park','right','Right-hand Park','Arm rests at the right side of the windshield (most common)')}
+        ${opt('m_park','left','Left-hand Park','Arm rests at the left side of the windshield')}
+      </div>
+      ${needsCircuit?`<div class="card-hd" style="margin-bottom:10px">Park circuitry</div>
+      <div class="help warn"><span class="help-icon">⚠️</span><div>The MD and Dual Drive offer two park options. <b>Coast-to-Park</b> is standard and reliable. <b>Dynamic Park</b> actively drives to a precise position — preferred for larger systems.</div></div>
+      <div class="opt-grid g2" style="gap:10px">
+        ${opt('m_parkCircuit','coast','Coast-to-Park','Motor decelerates and coasts to the park position. Simple and reliable.')}
+        ${opt('m_parkCircuit','dynamic','Dynamic Park','Motor actively drives to exact park position. More precise.')}
+      </div>`:''}
+      ${nav()}`;
+  }
+
+  if (id==='m_sweep') {
+    const motor = MARINE_MOTORS[S.m_motor];
+    const isDIN = (S.m_motor==='MD'||S.m_motor==='DD');
+    const angles = isDIN ? [40,50,60,70,80,90,100,108] : [40,50,60,70,80,90,100,110];
+    return `
+      <div class="help"><span class="help-icon">🌀</span><div><b>Sweep angle</b> is how many degrees the wiper arm travels across the glass. Allow an extra 5% on each side of your desired pattern to prevent the blade from hitting the window frame. Most installations use <b>80–110°</b>.</div></div>
+      <div class="angle-grid">
+        ${angles.map(a=>`<div class="angle-pill${S.m_sweep===a?' sel':''}" onclick="pick('m_sweep',${a})">${a}°</div>`).join('')}
+      </div>
+      ${nav()}`;
+  }
+
+  if (id==='m_shaft') {
+    const motor = MARINE_MOTORS[S.m_motor];
+    const isDIN = (S.m_motor==='MD'||S.m_motor==='DD');
+    return `
+      <div class="help"><span class="help-icon">📌</span><div><b>Shaft length</b> is how far the shaft extends from the motor face through your mounting panel. Measure the thickness of your dash or mounting surface. The shaft must protrude 14–21mm beyond the outer skin for proper mounting hardware.</div></div>
+      <div class="card-hd" style="margin-bottom:10px">Shaft Length</div>
+      <div class="opt-grid${isDIN?' g-5':' g3'}" style="gap:9px;grid-template-columns:repeat(${isDIN?5:3},1fr);margin-bottom:16px">
+        ${motor.shaftOptions.map(s=>`${opt('m_shaft',s,s.replace('in','"'),'')}`).join('')}
+      </div>
+      ${!isDIN?`<div class="card-hd" style="margin-bottom:10px">Motor Color</div>
+      <div class="opt-grid g2" style="gap:9px">
+        ${opt('m_color','white','White','Standard white powder-coated aluminum case')}
+        ${opt('m_color','black','Black','Black powder-coated case (adds "B" to part number)')}
+      </div>`:''}
+      ${nav()}`;
+  }
+
+  if (id==='m_arm') {
+    const mk = S.m_motor;
+    const radialArms = MARINE_ARMS[`${mk}-radial`]||[];
+    const pantoArms = MARINE_ARMS[`${mk}-panto`]||[];
+    const armList = S.m_armType==='radial' ? radialArms : S.m_armType==='panto' ? pantoArms : [];
+    return `
+      <div class="help"><span class="help-icon">📐</span><div><b>Radial arms</b> sweep in an arc from a single pivot. <b>Pantograph arms</b> use a parallel linkage that keeps the blade at the same angle throughout the sweep — better for large or curved glass. Pantograph arms require saddle blade attachment.</div></div>
+      <div class="card-hd" style="margin-bottom:10px">Arm Style</div>
+      <div class="opt-grid g2" style="gap:10px;margin-bottom:14px">
+        ${opt('m_armType','radial','Radial Arm','Sweeps in a fixed arc. Most common for marine. J-Hook or saddle blade end.')}
+        ${opt('m_armType','panto','Pantograph Arm','Parallel motion. Better for large glass. Saddle blade attachment required.')}
+      </div>
+      ${S.m_armType?`<div class="card-hd" style="margin-bottom:10px">Arm Length Range</div>
+      <div class="help tip"><span class="help-icon">✅</span><div>All arms are <b>304 Stainless Steel, powder coated black, supplied DRY.</b> To add washer fluid: order wet kit <b>${S.m_armType==='radial'?'WE19492':'WE19491'}</b> (spray nozzle + tubing + clips included).</div></div>
+      <div class="opt-grid g2" style="gap:9px">
+        ${armList.map(a=>`<div class="opt${S.m_armPn===a.pn?' sel':''}" onclick="S.m_armPn='${a.pn}';render()">
+          <div class="opt-title">${a.len} <span style="font-weight:400;font-size:11px;color:var(--muted)">(${a.mm}mm)</span><span style="font-size:14px">${S.m_armPn===a.pn?'●':'○'}</span></div>
+          ${a.swivel?`<div class="opt-desc">Swivel head: ${a.swivel}</div>`:''}
+          <span class="opt-pn">${a.pn}</span>
+        </div>`).join('')}
+      </div>`:''}
+      ${nav()}`;
+  }
+
+  if (id==='m_blade') {
+    const blades = MARINE_BLADES[S.m_motor]||[];
+    return `
+      <div class="help"><span class="help-icon">🔹</span><div>All marine blades are <b>304 Stainless Steel, black powder coated</b>. Standard blades have a J-Hook universal adapter (fits hooks, pins, saddle, bayonet). Saddle-specific blades are labeled "SS Saddle" and use the 13.6mm saddle connection.</div></div>
+      <div class="opt-grid" style="grid-template-columns:repeat(4,1fr);gap:8px">
+        ${blades.map(b=>`<div class="opt${S.m_bladePn===b.pn?' sel':''}" onclick="S.m_bladePn='${b.pn}';render()">
+          <div class="opt-title">${b.len}<span style="font-size:13px">${S.m_bladePn===b.pn?'●':'○'}</span></div>
+          <span class="opt-pn">${b.pn}</span>
+        </div>`).join('')}
+      </div>
+      ${nav('View Complete System →')}`;
+  }
+
+  if (id==='m_summary') return renderMarineSummary();
+
+
+  return `<div class="card"><p>Unknown step.</p></div>`;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// MARINE SUMMARY
+// ═══════════════════════════════════════════════════════════════
+function renderMarineSummary() {
+  const motorKey = S.m_motor;
+  const motor = MARINE_MOTORS[motorKey];
+  const motorPN = buildMarinePN();
+  const wetKit = S.m_armType==='radial' ? 'WE19492' : 'WE19491';
+  const isDIN = (motorKey==='MD'||motorKey==='DD');
+
+  const bom = [
+    {role:'Motor', pn:motorPN||'—', desc:motor.name, note:`${S.m_voltage} · ${S.m_park}-hand park · ${S.m_sweep}° sweep`},
+    {role:'Arm', pn:S.m_armPn||'—', desc:`${S.m_armType==='radial'?'Radial':'Pantograph'} arm · 304 SS`, note:'Supplied dry. Add wet kit for washer spray.'},
+    {role:'Blade', pn:S.m_bladePn||'—', desc:'304 SS marine blade, black', note:'Universal adapter (J-Hook / Saddle compatible)'},
+  ];
+  const acc = [
+    {role:'Wet Kit', pn:wetKit, desc:S.m_armType==='radial'?'Wet kit for radial arms':'Wet kit for pantograph arms', note:'Spray nozzle + tubing + retainer clips + instructions'},
+    ...(motorKey==='4A'||motorKey==='4R'?[{role:'Hardware', pn:'400297–400299', desc:'Motor mounting hardware', note:'M16 nut, stainless spacer, rubber washers'}]:[]),
+    ...(motorKey==='MD'&&S.m_armType==='panto'?[{role:'Panto Kit', pn:'SP30260003', desc:'Slave pivot adapter kit', note:'Required for pantograph arms with MD Compact Drive'}]:[]),
+    ...(motorKey==='4R'?[{role:'Switch', pn:'400258', desc:'2-speed switch kit', note:'Optional — park/low/high speed switch assembly'}]:[]),
+  ];
+
+  return `
+    <div class="help tip"><span class="help-icon">✅</span><div><b>Your marine wiper system is complete.</b> Print this page to share with your distributor or place your order. Contact <b>Autotex</b> if you need help or have questions about any part number.</div></div>
+    <div style="text-align:right;margin-bottom:14px"><button class="btn btn-print" onclick="window.print()">🖨 Print / Save PDF</button></div>
+    
+    <div class="pn-builder">
+      <div class="pn-builder-title">Motor Part Number</div>
+      <div class="pn-segs">${buildMPNSegs()}</div>
+      <div style="font-size:10px;color:rgba(255,255,255,0.35);margin-bottom:8px">COMPLETE MOTOR PART NUMBER</div>
+      <div class="pn-full">${motorPN||'—'}</div>
+    </div>
+
+    <div class="card">
+      <div class="card-hd" style="margin-bottom:14px">System Specifications</div>
+      <div class="spec-grid">
+        <div class="spec-tile"><div class="spec-k">Motor</div><div class="spec-v">${motor.name}</div></div>
+        <div class="spec-tile"><div class="spec-k">Voltage</div><div class="spec-v">${S.m_voltage||'—'}</div></div>
+        <div class="spec-tile"><div class="spec-k">Sweep</div><div class="spec-v">${S.m_sweep||'—'}°</div></div>
+        <div class="spec-tile"><div class="spec-k">Park</div><div class="spec-v">${S.m_park||'—'}-hand</div></div>
+        <div class="spec-tile"><div class="spec-k">Shaft</div><div class="spec-v">${S.m_shaft?S.m_shaft.replace('in','"'):'—'}</div></div>
+        <div class="spec-tile"><div class="spec-k">Arm type</div><div class="spec-v">${S.m_armType==='radial'?'Radial':'Pantograph'}</div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-hd" style="margin-bottom:0">Bill of Materials</div>
+      <table class="bom" style="margin-top:12px">
+        <thead><tr><th>Component</th><th>Part Number</th><th>Description</th><th>Notes</th></tr></thead>
+        <tbody>${bom.map(r=>`<tr><td class="bom-role">${r.role}</td><td class="bom-pn">${r.pn}</td><td>${r.desc}</td><td class="bom-note">${r.note}</td></tr>`).join('')}</tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <div class="card-hd" style="margin-bottom:0">Accessories</div>
+      <table class="bom" style="margin-top:12px">
+        <thead><tr><th>Item</th><th>Part Number</th><th>Description</th><th>Notes</th></tr></thead>
+        <tbody>${acc.map(r=>`<tr><td class="bom-role">${r.role}</td><td class="bom-pn">${r.pn}</td><td>${r.desc}</td><td class="bom-note">${r.note}</td></tr>`).join('')}</tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <div class="card-hd" style="margin-bottom:10px">Wiring Color Code — ${motor.name}</div>
+      ${motor.wiring.map(w=>`<div class="wire-row"><div class="wire-dot" style="background:${w.c};${w.bdr?'border:1.5px solid #aaa':''}"></div><div class="wire-func">${w.f}</div></div>`).join('')}
+      <div style="font-size:11px;color:var(--muted);margin-top:10px">16 AWG, 12" leads. Fusing: ${motor.fusing}. Isolated ground.</div>
+    </div>
+
+    <div class="card" style="background:var(--ink);color:#fff;border:none">
+      <div style="margin-bottom:14px"><img src="data:image/png;base64,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" alt="Autotex" style="height:30px"></div>
+      <div style="font-size:13px;color:rgba(255,255,255,0.55);line-height:1.8">getautotex.com<br>service@getautotex.com<br>(800) 692-3962</div>
+    </div>
+
+    <div class="nav-row"><button class="btn btn-ghost" onclick="back()">← Edit</button><button class="btn btn-reset" onclick="resetApp()">↺ Start over</button></div>`;
+}
+
+function buildMPNSegs() {
+  const m = S.m_motor; if (!m) return '';
+  const segs = [];
+  if (m==='4A'||m==='4R') {
+    const shaftMap={'1.5in':'1','2.5in':'2','3.5in':'3'};
+    segs.push({v:m,l:'Motor'},{v:'·',sep:true},{v:shaftMap[S.m_shaft]||'?',l:'Shaft',hi:true},{v:'·',sep:true},{v:S.m_voltage==='12v'?'12':'24',l:'Voltage'},{v:'·',sep:true},{v:S.m_park==='right'?'R':'L',l:'Park',hi:true},{v:'110',l:'Angle'},{v:'CE',l:'Certified'},{v:m==='4A'&&S.m_color==='black'?'B':'',l:'Color'});
+  } else if (m==='MD') {
+    const sm={'1in':'1','2in':'2','3in':'3','1.25in':'4','2.5in':'5'};
+    segs.push({v:'MD',l:'Compact'},{v:'·',sep:true},{v:sm[S.m_shaft]||'?',l:'Shaft',hi:true},{v:'·',sep:true},{v:S.m_voltage==='12v'?'12':'24',l:'Voltage'},{v:S.m_parkCircuit==='dynamic'?'D':'C',l:'Park Ckt',hi:true},{v:'·',sep:true},{v:S.m_park==='right'?'R':'L',l:'Park Pos',hi:true},{v:String(S.m_sweep||'?').padStart(3,'0'),l:'Sweep',hi:true});
+  } else if (m==='DD') {
+    const sm={'1in':'1','2in':'2','3in':'3','1.25in':'4','2.5in':'5'};
+    segs.push({v:'DD',l:'Dual Drive'},{v:'·',sep:true},{v:sm[S.m_shaft]||'?',l:'Shaft',hi:true},{v:'·',sep:true},{v:S.m_voltage==='12v'?'12':'24',l:'Voltage'},{v:'D',l:'Dynamic'},{v:'·',sep:true},{v:S.m_park==='right'?'R':'L',l:'Park',hi:true},{v:String(S.m_sweep||'?').padStart(3,'0'),l:'Sweep',hi:true},{v:'x',l:'ID'});
+  }
+  return segs.filter(s=>s.v||s.sep).map(s=>s.sep?`<div class="pn-sep">·</div>`:`<div class="pn-seg"><div class="pn-seg-v${s.hi?' hi':''}">${s.v}</div><div class="pn-seg-l">${s.l||''}</div></div>`).join('');
+}
+
+
+// ═══════════════════════════════════════════════════════════════
+// SIDEBAR
+// ═══════════════════════════════════════════════════════════════
+function renderSidebar() {
+  const body = document.getElementById('sidebarBody');
+  const status = document.getElementById('sidebarStatus');
+  let html = '';
+
+  const motor = MARINE_MOTORS[S.m_motor];
+  const pn = buildMarinePN();
+  html += section('Vessel', [{k:'Voltage', v:S.m_voltage}]);
+  html += section('Motor', [{k:'Type', v:motor?motor.name:null},{k:'Park', v:S.m_park?S.m_park+'-hand':null},{k:'Sweep', v:S.m_sweep?S.m_sweep+'°':null},{k:'Shaft', v:S.m_shaft?S.m_shaft.replace('in','"'):null},{k:'Part #', v:pn, pn:true}]);
+  html += section('Arm & Blade', [{k:'Arm style', v:S.m_armType?S.m_armType.charAt(0).toUpperCase()+S.m_armType.slice(1):null},{k:'Arm PN', v:S.m_armPn, pn:true},{k:'Blade PN', v:S.m_bladePn, pn:true}]);
+
+  body.innerHTML = html || `<div class="sb-section"><div class="sb-empty">Make your first selection to begin.</div></div>`;
+
+  const complete = S.m_bladePn && buildMarinePN();
+  if (complete) {
+    status.innerHTML = `<div class="sb-dot" style="background:var(--green)"></div><span style="color:var(--green);font-weight:600">✓ System complete</span>`;
+  } else {
+    status.innerHTML = `<div class="sb-dot" style="background:var(--accent);animation:pulse 1.5s infinite"></div><span style="color:var(--muted)">In progress…</span>`;
+  }
+}
+
+function section(label, rows) {
+  const hasData = rows.some(r=>r.v);
+  if (!hasData) return '';
+  return `<div class="sb-section"><div class="sb-label">${label}</div>${rows.filter(r=>r.v).map(r=>`<div class="sb-row"><span class="sb-k">${r.k}</span><span class="${r.pn?'sb-pn':'sb-v'}">${r.v}</span></div>`).join('')}</div>`;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// HEADER NAV
+// ═══════════════════════════════════════════════════════════════
+function renderHeader() {
+  const flow = getFlow();
+  const nav = document.getElementById('hdrNav');
+  nav.innerHTML = flow.map((step,i)=>`
+    <div class="hdr-step ${i<S.step?'done':i===S.step?'active':''}" onclick="goStep(${i})">
+      <div class="hdr-step-num">${i<S.step?'✓':i+1}</div>
+      <span>${step.title.split(' ')[0]}</span>
+    </div>
+    ${i<flow.length-1?`<div class="hdr-step-arr">›</div>`:''}`).join('');
+
+  // Step band
+  const cs = flow[S.step];
+  document.getElementById('stepBandNum').textContent = S.step+1;
+  document.getElementById('stepBandTitle').textContent = cs?.title||'';
+  document.getElementById('stepBandDesc').textContent = cs?.desc||'';
+
+  // Progress pips
+  const prog = document.getElementById('stepProgress');
+  prog.innerHTML = flow.map((_,i)=>`<div class="prog-pip${i<S.step?' done':i===S.step?' active':''}"></div>`).join('');
+}
+
+// ═══════════════════════════════════════════════════════════════
+// MAIN RENDER
+// ═══════════════════════════════════════════════════════════════
+function render() {
+  renderHeader();
+  document.getElementById('root').innerHTML = renderStep();
+  renderSidebar();
+  window.scrollTo({top:0,behavior:'smooth'});
+  // Re-attach inputs (they lose state on innerHTML replace)
+  const al = document.querySelector('input[placeholder*="500"]');
+  if (al) { al.value=S.hd_armLen; al.oninput=e=>{S.hd_armLen=e.target.value;render()}; }
+  const tf = document.querySelector('input[placeholder*="25"]');
+  if (tf) { tf.value=S.hd_tipForce; tf.oninput=e=>{S.hd_tipForce=e.target.value;render()}; }
+  const sa = document.querySelector('input[placeholder*="90"]');
+  if (sa) { sa.value=S.hd_sweepAngle; sa.oninput=e=>{S.hd_sweepAngle=e.target.value;render()}; }
+}
+
+render();
+</script>
+
+</body>
+</html>
