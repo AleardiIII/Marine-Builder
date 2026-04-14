@@ -531,13 +531,13 @@ function renderStep() {
 
   if (id==='m_motor') {
     const motorList = [
-      {k:'4A', rec:true, title:'4A Sealed Motor', desc:'IP66 sealed, CE certified. Drives arms to 24\\" / 600 mm. Coast-to-park, adjustable sweep 40–110°.', max:'Up to 24"'},
-      {k:'4R', title:'4R WWF Motor', desc:'Self-contained oscillating motor. Medium duty, no external linkage. Drives arms to 24\\" / 600 mm.', max:'Up to 24"'},
-      {k:'MD', title:'Marine Compact Drive', desc:'32 Nm torque. Arms 20–32\\". Wipe angle field-adjustable 40–108°. DIN A12×M8 shaft.', max:'20"–32"'},
-      {k:'DD', title:'Marine Dual Drive', desc:'56 Nm torque. Arms 32–40\\". Drives both pivots simultaneously via dual output.', max:'32"–40"'},
+      {k:'4A', rec:true, title:'4A Sealed Motor', desc:'IP66 sealed, CE certified. Drives arms to 24" / 600 mm. Coast-to-park, adjustable sweep 40–110°.', max:'Up to 24"'},
+      {k:'4R', title:'4R WWF Motor', desc:'Self-contained oscillating motor. Medium duty, no external linkage. Drives arms to 24" / 600 mm.', max:'Up to 24"'},
+      {k:'MD', title:'Marine Compact Drive', desc:'32 Nm torque. Arms 20–32". Wipe angle field-adjustable 40–108°. DIN A12×M8 shaft.', max:'20"–32"'},
+      {k:'DD', title:'Marine Dual Drive', desc:'56 Nm torque. Arms 32–40". Drives both pivots simultaneously via dual output.', max:'32"–40"'},
     ];
     return `
-      <div class="help"><span class="help-icon">💡</span><div><b>Select by arm/blade length requirement.</b> The 4A Sealed covers arms up to 24\\". For arms 20–32\\", use the Compact Drive (MD). For 32–40\\", use the Dual Drive (DD).</div></div>
+      <div class="help"><span class="help-icon">💡</span><div><b>Select by arm/blade length requirement.</b> The 4A Sealed covers arms up to 24". For arms 20–32", use the Compact Drive (MD). For 32–40", use the Dual Drive (DD).</div></div>
       <div class="opt-grid" style="gap:10px">
         ${motorList.map(m=>`<div class="motor-card${S.m_motor===m.k?' sel':''} ${m.rec?'rec':''}" onclick="pick('m_motor','${m.k}')">
           <div class="motor-top"><div><div class="motor-name">${m.title}</div><div style="font-size:11px;color:var(--muted);margin-top:2px">Max arm length: <b>${m.max}</b></div></div>${m.rec?'<span class="badge b-orange">RECOMMENDED</span>':''}</div>
